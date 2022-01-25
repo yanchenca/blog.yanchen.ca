@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,700,700italic%7CMontserrat:300,300italic,400,400italic,700,700italic%7CSource+Code+Pro:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;blog.yanchen.ca&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Mist&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:&quot;utterances&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;Searching...&quot;,&quot;empty&quot;:&quot;We didn&#39;t find any results for the search: ${query}&quot;,&quot;hits_time&quot;:&quot;${hits} results found in ${time} ms&quot;,&quot;hits&quot;:&quot;${hits} results found&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="In this post, we built a motorized LEGO rally car powered by Arduino with iPhone remote.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Motorized LEGO Rally Car">
+<meta property="og:url" content="https://blog.yanchen.ca/2018/06/15/motorized-lego-rally-car/">
+<meta property="og:site_name" content="YAN CHEN">
+<meta property="og:description" content="In this post, we built a motorized LEGO rally car powered by Arduino with iPhone remote.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/42077.jpeg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/88003.jpeg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/88004.jpeg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/8870.jpeg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/8886.jpeg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/ARDUINO_UNO.jpg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/l298n.jpg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/esp8266esp01.jpg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/dupont.png">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/breadboard.jpeg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/18650.jpg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/charger.jpg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/bbox.png">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/soldering.jpg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/arch.png">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/UNOPINOUT.png">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/arduinopsu.png">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/motorwirepinout.jpg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/l298npinout.jpg">
+<meta property="og:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/esp01pinout.png">
+<meta property="article:published_time" content="2018-06-15T04:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-25T15:38:57.757Z">
+<meta property="article:author" content="Yan Chen">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.yanchen.ca/images/motorized-lego-rally-car/42077.jpeg">
+
+
+<link rel="canonical" href="https://blog.yanchen.ca/2018/06/15/motorized-lego-rally-car/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;en&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;blog.yanchen.ca&#x2F;2018&#x2F;06&#x2F;15&#x2F;motorized-lego-rally-car&#x2F;&quot;,&quot;path&quot;:&quot;2018&#x2F;06&#x2F;15&#x2F;motorized-lego-rally-car&#x2F;&quot;,&quot;title&quot;:&quot;Motorized LEGO Rally Car&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Motorized LEGO Rally Car | YAN CHEN</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WS9Z3VY9QG"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-WS9Z3VY9QG&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <h1 class="site-title">YAN CHEN</h1>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Video"><span class="nav-number">1.</span> <span class="nav-text">Video</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Parts"><span class="nav-number">2.</span> <span class="nav-text">Parts</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Architecture"><span class="nav-number">3.</span> <span class="nav-text">Architecture</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Arduino"><span class="nav-number">4.</span> <span class="nav-text">Arduino</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pinout"><span class="nav-number">4.1.</span> <span class="nav-text">Pinout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Power-Supply"><span class="nav-number">4.2.</span> <span class="nav-text">Power Supply</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Incoming"><span class="nav-number">4.2.1.</span> <span class="nav-text">Incoming</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Outgoing"><span class="nav-number">4.2.2.</span> <span class="nav-text">Outgoing</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Digital-Output-Pins"><span class="nav-number">4.3.</span> <span class="nav-text">Digital Output Pins</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Power-Functions-Motors-Light"><span class="nav-number">5.</span> <span class="nav-text">Power Functions Motors&#x2F;Light</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pinout-1"><span class="nav-number">5.1.</span> <span class="nav-text">Pinout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DC-Motor"><span class="nav-number">5.2.</span> <span class="nav-text">DC Motor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Servo-Motor"><span class="nav-number">5.3.</span> <span class="nav-text">Servo Motor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Wire-Connection"><span class="nav-number">5.3.1.</span> <span class="nav-text">Wire Connection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Control"><span class="nav-number">5.3.2.</span> <span class="nav-text">Control</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Light"><span class="nav-number">5.4.</span> <span class="nav-text">Light</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Wire-Connection-1"><span class="nav-number">5.4.1.</span> <span class="nav-text">Wire Connection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Control-1"><span class="nav-number">5.4.2.</span> <span class="nav-text">Control</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#L298N"><span class="nav-number">6.</span> <span class="nav-text">L298N</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pinout-2"><span class="nav-number">6.1.</span> <span class="nav-text">Pinout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Wire-Connection-2"><span class="nav-number">6.2.</span> <span class="nav-text">Wire Connection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Battery"><span class="nav-number">6.2.1.</span> <span class="nav-text">Battery</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Arduino-1"><span class="nav-number">6.2.2.</span> <span class="nav-text">Arduino</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DC-Motor-1"><span class="nav-number">6.2.3.</span> <span class="nav-text">DC Motor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Control-2"><span class="nav-number">6.3.</span> <span class="nav-text">Control</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ESP8266-ESP-01"><span class="nav-number">7.</span> <span class="nav-text">ESP8266 ESP-01</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pinout-3"><span class="nav-number">7.1.</span> <span class="nav-text">Pinout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Wire-Connection-3"><span class="nav-number">7.2.</span> <span class="nav-text">Wire Connection</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Code"><span class="nav-number">8.</span> <span class="nav-text">Code</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Arduino-2"><span class="nav-number">8.1.</span> <span class="nav-text">Arduino</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS"><span class="nav-number">8.2.</span> <span class="nav-text">iOS</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Yan Chen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nrthyrk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nrthyrk" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.yanchen.ca/2018/06/15/motorized-lego-rally-car/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Yan Chen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YAN CHEN">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Motorized LEGO Rally Car
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-06-15 00:00:00" itemprop="dateCreated datePublished" datetime="2018-06-15T00:00:00-04:00">2018-06-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2022-01-25 10:38:57" itemprop="dateModified" datetime="2022-01-25T10:38:57-05:00">2022-01-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>In this post, we built a motorized LEGO rally car powered by Arduino with iPhone remote.</p>
+<span id="more"></span>
+
+<h1 id="Video"><a href="#Video" class="headerlink" title="Video"></a>Video</h1><iframe width="560" height="315" src="https://www.youtube.com/embed/7VRo6pplA4E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+<h1 id="Parts"><a href="#Parts" class="headerlink" title="Parts"></a>Parts</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://shop.lego.com/en-CA/Rally-Car-42077">LEGO Rally Car 42077</a><img src="/images/motorized-lego-rally-car/42077.jpeg" width="200"></li>
+<li><a target="_blank" rel="noopener" href="https://shop.lego.com/en-CA/Power-Functions-L-Motor-88003">LEGO Power Functions L-Motor 88003</a> (DC Motor)<img src="/images/motorized-lego-rally-car/88003.jpeg" width="200"></li>
+<li><a target="_blank" rel="noopener" href="https://shop.lego.com/en-CA/Power-Functions-Servo-Motor-88004">LEGO Power Functions Servo Motor 88004</a> (Servo Motor)<img src="/images/motorized-lego-rally-car/88004.jpeg" width="200"></li>
+<li><a target="_blank" rel="noopener" href="https://shop.lego.com/en-CA/LEGO-Power-Functions-Light-8870">LEGO Power Functions Light 8870</a><img src="/images/motorized-lego-rally-car/8870.jpeg" width="200"></li>
+<li>2 * <a target="_blank" rel="noopener" href="https://shop.lego.com/en-CA/LEGO-Power-Functions-Extension-Wire-8886">LEGO Power Functions Extension Wire 8886</a>: optional, only required if you don’t want to cut your motor/light wire.<img src="/images/motorized-lego-rally-car/8886.jpeg" width="200"></li>
+<li>Arduino Uno<img src="/images/motorized-lego-rally-car/ARDUINO_UNO.jpg" width="200"></li>
+<li>L298N Dual H-bridge Stepper Motor Driver Module  <img src="/images/motorized-lego-rally-car/l298n.jpg" width="200"></li>
+<li>ESP8266 ESP-01 WiFi Wireless Transceiver Module<img src="/images/motorized-lego-rally-car/esp8266esp01.jpg" width="200"></li>
+<li>a lot * Dupont Wire (Male to Male, Male to Female, Female to Female)<img src="/images/motorized-lego-rally-car/dupont.png" width="200"></li>
+<li>Breadboard: for testing<img src="/images/motorized-lego-rally-car/breadboard.jpeg" width="200"></li>
+<li>3 * 18650 Battery<img src="/images/motorized-lego-rally-car/18650.jpg" width="200"></li>
+<li>18650 Battery Charger<img src="/images/motorized-lego-rally-car/charger.jpg" width="200"></li>
+<li>18650 Battery Case 3x<img src="/images/motorized-lego-rally-car/bbox.png" width="200"></li>
+<li>Soldering Iron, Solder, Rosin Soldering Flux: optional, only required if you want to solder the wires up.<img src="/images/motorized-lego-rally-car/soldering.jpg" width="200"></li>
+</ul>
+<p>Refer to <strong>Wire Connection</strong> sections for connecting these components. </p>
+<p>The breadboard is used to connect dupont wires temporarily for testing. Refer to <a target="_blank" rel="noopener" href="https://learn.sparkfun.com/tutorials/how-to-use-a-breadboard">https://learn.sparkfun.com/tutorials/how-to-use-a-breadboard</a> for how to use a breadboard.</p>
+<h1 id="Architecture"><a href="#Architecture" class="headerlink" title="Architecture"></a>Architecture</h1><img src="/images/motorized-lego-rally-car/arch.png" width="600">
+
+<h1 id="Arduino"><a href="#Arduino" class="headerlink" title="Arduino"></a>Arduino</h1><p>Arduino is used to control the two motors used on the rally car.</p>
+<h2 id="Pinout"><a href="#Pinout" class="headerlink" title="Pinout"></a>Pinout</h2><img src="/images/motorized-lego-rally-car/UNOPINOUT.png" width="600">
+
+<h2 id="Power-Supply"><a href="#Power-Supply" class="headerlink" title="Power Supply"></a>Power Supply</h2><h3 id="Incoming"><a href="#Incoming" class="headerlink" title="Incoming"></a>Incoming</h3><p>There are four ways providing power to Arduino:</p>
+<img src="/images/motorized-lego-rally-car/arduinopsu.png" width="400">
+
+<p>We will use two of them in this project.</p>
+<ul>
+<li>USB: used to provide power when connected to computer, for uploading code, testing, etc.</li>
+<li>5V Pin: used to provide power from L298N in rally car. </li>
+</ul>
+<h3 id="Outgoing"><a href="#Outgoing" class="headerlink" title="Outgoing"></a>Outgoing</h3><p>The 3.3V pin is used to provide power to ESP8266 ESP-01 WiFi module in this project.</p>
+<h2 id="Digital-Output-Pins"><a href="#Digital-Output-Pins" class="headerlink" title="Digital Output Pins"></a>Digital Output Pins</h2><p>Only pins marked as “~” are PWM pins, which are used to provide analog outputs. These pins are used to control the speed of DC motors and the angle of Servo motors.</p>
+<h1 id="Power-Functions-Motors-Light"><a href="#Power-Functions-Motors-Light" class="headerlink" title="Power Functions Motors/Light"></a>Power Functions Motors/Light</h1><ul>
+<li>DC motor refers a continuous rotation motor, providing speed to the rally car.</li>
+<li>Servo motor refers to a motor which can only rotate within a certain angle range, providing direction to the rally car.</li>
+</ul>
+<h2 id="Pinout-1"><a href="#Pinout-1" class="headerlink" title="Pinout"></a>Pinout</h2><p>Power Functions cables have the same pinout as follows.</p>
+<img src="/images/motorized-lego-rally-car/motorwirepinout.jpg" width="300">
+
+<h2 id="DC-Motor"><a href="#DC-Motor" class="headerlink" title="DC Motor"></a>DC Motor</h2><p>Refer to L298N section for wire connection.</p>
+<h2 id="Servo-Motor"><a href="#Servo-Motor" class="headerlink" title="Servo Motor"></a>Servo Motor</h2><h3 id="Wire-Connection"><a href="#Wire-Connection" class="headerlink" title="Wire Connection"></a>Wire Connection</h3><ul>
+<li>GND: Battery negative</li>
+<li>9V: Battery positive</li>
+<li>C1: Arduino #5</li>
+<li>C2: Arduino #9</li>
+</ul>
+<p>Note that LEGO motors use 9V voltage normally. But it will work fine under 12V according to other people’s tests. The three 18650 batteries I used has a total of 10.8V as tested, although shown as 3.7V each in specs. Take your own risk here.</p>
+<h3 id="Control"><a href="#Control" class="headerlink" title="Control"></a>Control</h3><table>
+<thead>
+<tr>
+<th align="center">C1</th>
+<th align="center">C2</th>
+<th align="center">State of Servo Motor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">n%</td>
+<td align="center">Rotate Clockwise (n% of 90°)</td>
+</tr>
+<tr>
+<td align="center">n%</td>
+<td align="center">0</td>
+<td align="center">Rotate Counterclockwise (n% of 90°)</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">Return to Zero Position</td>
+</tr>
+</tbody></table>
+<h2 id="Light"><a href="#Light" class="headerlink" title="Light"></a>Light</h2><h3 id="Wire-Connection-1"><a href="#Wire-Connection-1" class="headerlink" title="Wire Connection"></a>Wire Connection</h3><ul>
+<li>C1: Arduino #12</li>
+<li>C2: Arduino #13</li>
+</ul>
+<h3 id="Control-1"><a href="#Control-1" class="headerlink" title="Control"></a>Control</h3><table>
+<thead>
+<tr>
+<th align="center">C1</th>
+<th align="center">C2</th>
+<th align="center">State of Both Lights</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">On</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">On</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">Off</td>
+</tr>
+</tbody></table>
+<h1 id="L298N"><a href="#L298N" class="headerlink" title="L298N"></a>L298N</h1><p>L298N is used to control DC motors. Each L298N is able to control 2 DC motors independently. We only need to control 1 DC motor in this project.</p>
+<h2 id="Pinout-2"><a href="#Pinout-2" class="headerlink" title="Pinout"></a>Pinout</h2><img src="/images/motorized-lego-rally-car/l298npinout.jpg" width="400">
+
+<h2 id="Wire-Connection-2"><a href="#Wire-Connection-2" class="headerlink" title="Wire Connection"></a>Wire Connection</h2><h3 id="Battery"><a href="#Battery" class="headerlink" title="Battery"></a>Battery</h3><p>Provide 11.1V to L298N:</p>
+<ul>
+<li>+12V: Battery positive</li>
+<li>GND: Battery negative</li>
+</ul>
+<h3 id="Arduino-1"><a href="#Arduino-1" class="headerlink" title="Arduino"></a>Arduino</h3><p>Provide 5V to Arduino:</p>
+<ul>
+<li>keep 12V jumper (marked as JUMPER in pinout diagram) on</li>
+<li>+5V: Arduino +5V</li>
+<li>GND: Arduino GND</li>
+</ul>
+<p>Connect input pins to Arduino:</p>
+<ul>
+<li>remove ENABLE B jumper</li>
+<li>ENABLE B (edge side of the two pins connected by the removed jumper): Arduino #3, providing PWM output to L298N</li>
+<li>Input3: Arduino #7</li>
+<li>Input4: Arduino #8</li>
+</ul>
+<h3 id="DC-Motor-1"><a href="#DC-Motor-1" class="headerlink" title="DC Motor"></a>DC Motor</h3><ul>
+<li>OUT3: DC Motor C1</li>
+<li>OUT4: DC Motor C2</li>
+</ul>
+<h2 id="Control-2"><a href="#Control-2" class="headerlink" title="Control"></a>Control</h2><table>
+<thead>
+<tr>
+<th align="center">ENABLE B (PWM)</th>
+<th align="center">Input3</th>
+<th align="center">Input4</th>
+<th align="center">State of DC Motor B</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0%</td>
+<td align="center">X</td>
+<td align="center">X</td>
+<td align="center">Stop</td>
+</tr>
+<tr>
+<td align="center">n%</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">Brake</td>
+</tr>
+<tr>
+<td align="center">n%</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">Rotate Clockwise (speed n%)</td>
+</tr>
+<tr>
+<td align="center">n%</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">Rotate Counterlockwise (speed n%)</td>
+</tr>
+<tr>
+<td align="center">n%</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">Brake</td>
+</tr>
+</tbody></table>
+<h1 id="ESP8266-ESP-01"><a href="#ESP8266-ESP-01" class="headerlink" title="ESP8266 ESP-01"></a>ESP8266 ESP-01</h1><p>Keep the AT firmware on the ESP8266 ESP-01 module. We are going to use AT commands to communicate between Arduino and ESP8266 through Serial.</p>
+<h2 id="Pinout-3"><a href="#Pinout-3" class="headerlink" title="Pinout"></a>Pinout</h2><img src="/images/motorized-lego-rally-car/esp01pinout.png" width="400">
+
+<h2 id="Wire-Connection-3"><a href="#Wire-Connection-3" class="headerlink" title="Wire Connection"></a>Wire Connection</h2><ul>
+<li>GND: Arduino GND</li>
+<li>VCC: Arduino 3.3V</li>
+<li>CH_PD: Arduino 3.3V</li>
+<li>U0RXD: Arduino #11</li>
+<li>U0TXD: Arduino #10</li>
+</ul>
+<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>Github: <a target="_blank" rel="noopener" href="https://github.com/halfvim/lego-rally-car">https://github.com/halfvim/lego-rally-car</a></p>
+<h2 id="Arduino-2"><a href="#Arduino-2" class="headerlink" title="Arduino"></a>Arduino</h2><p><a target="_blank" rel="noopener" href="https://github.com/bportaluri/WiFiEsp">WiFiEsp</a> library is used in this project. It will listen on port 10002 for incoming UDP packets.</p>
+<p>Remember to put your desired ssid and pass in the code. You’ll need to connect to WiFi of this ssid with your iPhone later.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;WiFiEsp.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;WiFiEspUdp.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> HAVE_HWSERIAL1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;SoftwareSerial.h&quot;</span></span></span><br><span class="line"><span class="function">SoftwareSerial <span class="title">Serial1</span><span class="params">(<span class="number">10</span>, <span class="number">11</span>)</span></span>; <span class="comment">// RX, TX</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> ssid[] = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="keyword">char</span> pass[] = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="keyword">int</span> status = WL_IDLE_STATUS;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> sc1 = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">int</span> sc2 = <span class="number">9</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> dc1 = <span class="number">7</span>;</span><br><span class="line"><span class="keyword">int</span> dc2 = <span class="number">8</span>;</span><br><span class="line"><span class="keyword">int</span> dc3 = <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> lt1 = <span class="number">12</span>;</span><br><span class="line"><span class="keyword">int</span> lt2 = <span class="number">13</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> localPort = <span class="number">10002</span>;  <span class="comment">// local port to listen on</span></span><br><span class="line"></span><br><span class="line">WiFiEspUDP Udp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> buffer[<span class="number">255</span>];          <span class="comment">// buffer to hold incoming packet</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setup</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  pinMode(sc1, OUTPUT);</span><br><span class="line">  pinMode(sc2, OUTPUT);</span><br><span class="line"></span><br><span class="line">  pinMode(lt1, OUTPUT);</span><br><span class="line">  pinMode(lt2, OUTPUT);</span><br><span class="line"></span><br><span class="line">  pinMode(dc1, OUTPUT);</span><br><span class="line">  pinMode(dc2, OUTPUT);</span><br><span class="line">  pinMode(dc3, OUTPUT);</span><br><span class="line"></span><br><span class="line">  Serial.begin(<span class="number">115200</span>);   <span class="comment">// initialize serial for debugging</span></span><br><span class="line">  Serial1.begin(<span class="number">9600</span>);    <span class="comment">// initialize serial for ESP module</span></span><br><span class="line">  WiFi.init(&amp;Serial1);    <span class="comment">// initialize ESP module</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// check for the presence of the shield</span></span><br><span class="line">  <span class="keyword">if</span> (WiFi.status() == WL_NO_SHIELD) &#123;</span><br><span class="line">    Serial.println(<span class="string">&quot;WiFi shield not present&quot;</span>);</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Serial.print(<span class="string">&quot;Attempting to start AP &quot;</span>);</span><br><span class="line">  Serial.println(ssid);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// start access point</span></span><br><span class="line">  status = WiFi.beginAP(ssid, <span class="number">10</span>, pass, ENC_TYPE_WPA2_PSK);</span><br><span class="line"></span><br><span class="line">  Serial.println(<span class="string">&quot;Access point started&quot;</span>);</span><br><span class="line">  printWifiStatus();</span><br><span class="line">  </span><br><span class="line">  Udp.begin(localPort);</span><br><span class="line">  Serial.print(<span class="string">&quot;Listening on port &quot;</span>);</span><br><span class="line">  Serial.println(localPort);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">// if there&#x27;s data available, read a packet</span></span><br><span class="line">  <span class="keyword">int</span> packetSize = Udp.parsePacket();</span><br><span class="line">  <span class="keyword">if</span> (packetSize) &#123;</span><br><span class="line">    <span class="comment">// read the packet into packetBufffer</span></span><br><span class="line">    <span class="keyword">int</span> len = Udp.read(buffer, <span class="number">255</span>);</span><br><span class="line">    <span class="keyword">if</span> (len &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      buffer[len] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    processCommand(len);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">processCommand</span><span class="params">(<span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="string">&#x27;H&#x27;</span>) &#123;</span><br><span class="line">    digitalWrite(lt1, HIGH);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="string">&#x27;L&#x27;</span>) &#123;</span><br><span class="line">    digitalWrite(lt1, LOW);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="string">&#x27;A&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// turn left</span></span><br><span class="line">    String pwm;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">uint32_t</span> i = <span class="number">1</span>; i &lt; len; i++) &#123;</span><br><span class="line">      pwm += (<span class="keyword">char</span>)buffer[i];</span><br><span class="line">    &#125;</span><br><span class="line">    analogWrite(sc1, pwm.toInt());</span><br><span class="line">    analogWrite(sc2, <span class="number">0</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="string">&#x27;D&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// turn right</span></span><br><span class="line">    String pwm;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">uint32_t</span> i = <span class="number">1</span>; i &lt; len; i++) &#123;</span><br><span class="line">      pwm += (<span class="keyword">char</span>)buffer[i];</span><br><span class="line">    &#125;</span><br><span class="line">    analogWrite(sc1, <span class="number">0</span>);</span><br><span class="line">    analogWrite(sc2, pwm.toInt());</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="string">&#x27;W&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// forward</span></span><br><span class="line">    String pwm;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">uint32_t</span> i = <span class="number">1</span>; i &lt; len; i++) &#123;</span><br><span class="line">      pwm += (<span class="keyword">char</span>)buffer[i];</span><br><span class="line">    &#125;</span><br><span class="line">    digitalWrite(dc1, LOW);</span><br><span class="line">    digitalWrite(dc2, HIGH);</span><br><span class="line">    analogWrite(dc3, pwm.toInt());</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="string">&#x27;S&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// backward</span></span><br><span class="line">    String pwm;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">uint32_t</span> i = <span class="number">1</span>; i &lt; len; i++) &#123;</span><br><span class="line">      pwm += (<span class="keyword">char</span>)buffer[i];</span><br><span class="line">    &#125;</span><br><span class="line">    digitalWrite(dc1, HIGH);</span><br><span class="line">    digitalWrite(dc2, LOW);</span><br><span class="line">    analogWrite(dc3, pwm.toInt());</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="string">&#x27;B&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// brake</span></span><br><span class="line">    digitalWrite(dc1, LOW);</span><br><span class="line">    digitalWrite(dc2, LOW);</span><br><span class="line">    analogWrite(dc3, <span class="number">0</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="string">&#x27;P&#x27;</span>) &#123;</span><br><span class="line">    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());</span><br><span class="line">    Udp.write(<span class="string">&quot;ACK&quot;</span>);</span><br><span class="line">    Udp.endPacket();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printWifiStatus</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="comment">// print the SSID of the network you&#x27;re attached to</span></span><br><span class="line">  Serial.print(<span class="string">&quot;SSID: &quot;</span>);</span><br><span class="line">  Serial.println(WiFi.SSID());</span><br><span class="line"></span><br><span class="line">  <span class="comment">// print your WiFi shield&#x27;s IP address</span></span><br><span class="line">  IPAddress ip = WiFi.localIP();</span><br><span class="line">  Serial.print(<span class="string">&quot;IP Address: &quot;</span>);</span><br><span class="line">  Serial.println(ip);</span><br><span class="line"></span><br><span class="line">  Serial.println();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="iOS"><a href="#iOS" class="headerlink" title="iOS"></a>iOS</h2><p><a target="_blank" rel="noopener" href="https://github.com/Alamofire/Alamofire">Alamofire</a> and <a target="_blank" rel="noopener" href="https://github.com/IBM-Swift/BlueSocket">BlueSocket</a> are used in this project. </p>
+<p>We check whether the previous request was sent within 20 ms to avoid flooding the network.</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> UIKit</span><br><span class="line"><span class="keyword">import</span> Alamofire</span><br><span class="line"><span class="keyword">import</span> Socket</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RallyViewController</span>: <span class="title">UIViewController</span> </span>&#123;</span><br><span class="line">    <span class="keyword">@IBOutlet</span> <span class="keyword">weak</span> <span class="keyword">var</span> speedDot: <span class="type">UIView</span>!</span><br><span class="line">    <span class="keyword">@IBOutlet</span> <span class="keyword">weak</span> <span class="keyword">var</span> orientDot: <span class="type">UIView</span>!</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> socket <span class="operator">=</span> <span class="keyword">try!</span> <span class="type">Socket</span>.create(family: .inet, type: .datagram, proto: .udp)</span><br><span class="line">    <span class="keyword">let</span> address <span class="operator">=</span> <span class="type">Socket</span>.createAddress(for: <span class="string">&quot;192.168.4.1&quot;</span>, on: <span class="number">10002</span>)<span class="operator">!</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> lastSent <span class="operator">=</span> <span class="type">Date</span>().timeIntervalSince1970</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">sendRequest</span>(<span class="keyword">_</span> <span class="params">cmd</span>: <span class="type">String</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="type">Date</span>().timeIntervalSince1970 <span class="operator">-</span> lastSent <span class="operator">&gt;</span> <span class="number">0.02</span> <span class="operator">||</span> cmd <span class="operator">==</span> <span class="string">&quot;B&quot;</span> <span class="operator">||</span> cmd <span class="operator">==</span> <span class="string">&quot;W0&quot;</span> <span class="operator">||</span> cmd <span class="operator">==</span> <span class="string">&quot;S0&quot;</span> <span class="operator">||</span> cmd <span class="operator">==</span> <span class="string">&quot;W0&quot;</span> <span class="operator">||</span> cmd <span class="operator">==</span> <span class="string">&quot;S0&quot;</span> &#123;</span><br><span class="line">            <span class="keyword">try!</span> socket.write(from: cmd, to: address)</span><br><span class="line">            lastSent <span class="operator">=</span> <span class="type">Date</span>().timeIntervalSince1970</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@IBAction</span> <span class="function"><span class="keyword">func</span> <span class="title">lightChanged</span>(<span class="keyword">_</span> <span class="params">sender</span>: <span class="type">UISwitch</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> sender.isOn &#123;</span><br><span class="line">            sendRequest(<span class="string">&quot;H&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            sendRequest(<span class="string">&quot;L&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@IBAction</span> <span class="function"><span class="keyword">func</span> <span class="title">breakTouched</span>(<span class="keyword">_</span> <span class="params">sender</span>: <span class="type">UIButton</span>)</span> &#123;</span><br><span class="line">        sendRequest(<span class="string">&quot;B&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span>()</span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.viewDidLoad()</span><br><span class="line">        speedDot.isUserInteractionEnabled <span class="operator">=</span> <span class="literal">true</span></span><br><span class="line">        speedDot.addGestureRecognizer(<span class="type">UIPanGestureRecognizer</span>(target: <span class="keyword">self</span>, action: #selector(speedPan(gesture:))))</span><br><span class="line">        </span><br><span class="line">        orientDot.isUserInteractionEnabled <span class="operator">=</span> <span class="literal">true</span></span><br><span class="line">        orientDot.addGestureRecognizer(<span class="type">UIPanGestureRecognizer</span>(target: <span class="keyword">self</span>, action: #selector(orientPan(gesture:))))</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">sendSpeedRequest</span>(<span class="params">speed</span>: <span class="type">Int</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(speed)</span><br><span class="line">        <span class="keyword">if</span> speed <span class="operator">&gt;</span> <span class="number">0</span> &#123;</span><br><span class="line">            sendRequest(<span class="string">&quot;W<span class="subst">\(speed)</span>&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            sendRequest(<span class="string">&quot;S<span class="subst">\(<span class="operator">-</span>speed)</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">sendOrientRequest</span>(<span class="params">orient</span>: <span class="type">Int</span>)</span> &#123;</span><br><span class="line">        <span class="built_in">print</span>(orient)</span><br><span class="line">        <span class="keyword">if</span> orient <span class="operator">&lt;</span> <span class="number">0</span> &#123;</span><br><span class="line">            sendRequest(<span class="string">&quot;A<span class="subst">\(<span class="operator">-</span>orient)</span>&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            sendRequest(<span class="string">&quot;D<span class="subst">\(orient)</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">setOrient</span>(<span class="params">orient</span>: <span class="type">Int</span>)</span> &#123;</span><br><span class="line">        sendOrientRequest(orient: orient)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">resetOrient</span>()</span> &#123;</span><br><span class="line">        sendOrientRequest(orient: <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">setSpeed</span>(<span class="params">speed</span>: <span class="type">Int</span>)</span> &#123;</span><br><span class="line">        sendSpeedRequest(speed: speed)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">resetSpeed</span>()</span> &#123;</span><br><span class="line">        sendSpeedRequest(speed: <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">orientPan</span>(<span class="params">gesture</span>: <span class="type">UIPanGestureRecognizer</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> gesture.state <span class="operator">==</span> .changed &#123;</span><br><span class="line">            <span class="keyword">let</span> translation <span class="operator">=</span> gesture.translation(in: speedDot)</span><br><span class="line">            <span class="keyword">var</span> orient <span class="operator">=</span> translation.x <span class="operator">/</span> <span class="number">130</span></span><br><span class="line">            <span class="keyword">if</span> orient <span class="operator">&gt;</span> <span class="number">1</span> &#123;</span><br><span class="line">                orient <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> orient <span class="operator">&lt;</span> <span class="operator">-</span><span class="number">1</span> &#123;</span><br><span class="line">                orient <span class="operator">=</span> <span class="operator">-</span><span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line">            orient <span class="operator">=</span> orient <span class="operator">*</span> <span class="number">255</span></span><br><span class="line">            setOrient(orient: <span class="type">Int</span>(orient))</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> gesture.state <span class="operator">==</span> .ended &#123;</span><br><span class="line">            setOrient(orient: <span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">@objc</span> <span class="function"><span class="keyword">func</span> <span class="title">speedPan</span>(<span class="params">gesture</span>: <span class="type">UIPanGestureRecognizer</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> gesture.state <span class="operator">==</span> .changed &#123;</span><br><span class="line">            <span class="keyword">let</span> translation <span class="operator">=</span> gesture.translation(in: speedDot)</span><br><span class="line">            <span class="keyword">let</span> y <span class="operator">=</span> translation.y</span><br><span class="line">            <span class="keyword">let</span> screenHeight <span class="operator">=</span> view.frame.height</span><br><span class="line">            <span class="keyword">var</span> speed <span class="operator">=</span> y <span class="operator">/</span> (screenHeight <span class="operator">/</span> <span class="number">2</span> <span class="operator">*</span> <span class="number">0.7</span>)</span><br><span class="line">            <span class="keyword">if</span> speed <span class="operator">&gt;</span> <span class="number">1</span> &#123;</span><br><span class="line">                speed <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> speed <span class="operator">&lt;</span> <span class="operator">-</span><span class="number">1</span> &#123;</span><br><span class="line">                speed <span class="operator">=</span> <span class="operator">-</span><span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line">            speed <span class="operator">=</span> speed <span class="operator">*</span> (<span class="number">255</span> <span class="operator">-</span> <span class="number">85</span>)</span><br><span class="line">            <span class="keyword">if</span> speed <span class="operator">&gt;</span> <span class="number">0</span> &#123;</span><br><span class="line">                speed <span class="operator">+=</span> <span class="number">85</span></span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> speed <span class="operator">&lt;</span> <span class="number">0</span> &#123;</span><br><span class="line">                speed <span class="operator">-=</span> <span class="number">85</span></span><br><span class="line">            &#125;</span><br><span class="line">            speed <span class="operator">*=</span> <span class="operator">-</span><span class="number">1</span></span><br><span class="line">            setSpeed(speed: <span class="type">Int</span>(speed))</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> gesture.state <span class="operator">==</span> .ended &#123;</span><br><span class="line">            setSpeed(speed: <span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/12/07/create-rdd-for-hbase-table-with-kerberos-in-spark-on-yarn/" rel="prev" title="Create RDD for HBase table with Kerberos in Spark on Yarn">
+                  <i class="fa fa-chevron-left"></i> Create RDD for HBase table with Kerberos in Spark on Yarn
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/08/29/spark-sql-too-large-frame-error/" rel="next" title="Spark SQL Too Large Frame Error">
+                  Spark SQL Too Large Frame Error <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yan Chen</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

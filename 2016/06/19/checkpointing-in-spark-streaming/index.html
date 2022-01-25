@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,700,700italic%7CMontserrat:300,300italic,400,400italic,700,700italic%7CSource+Code+Pro:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;blog.yanchen.ca&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Mist&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:&quot;utterances&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;Searching...&quot;,&quot;empty&quot;:&quot;We didn&#39;t find any results for the search: ${query}&quot;,&quot;hits_time&quot;:&quot;${hits} results found in ${time} ms&quot;,&quot;hits&quot;:&quot;${hits} results found&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="In spark streaming, if updateStateByKey or mapWithState is used, data has to be checkpointed. This post explains the details behind checkpointing in Spark.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Checkpointing in Spark Streaming">
+<meta property="og:url" content="https://blog.yanchen.ca/2016/06/19/checkpointing-in-spark-streaming/">
+<meta property="og:site_name" content="YAN CHEN">
+<meta property="og:description" content="In spark streaming, if updateStateByKey or mapWithState is used, data has to be checkpointed. This post explains the details behind checkpointing in Spark.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://blog.yanchen.ca/images/checkpointing-in-spark-streaming/checkpoint-1.png">
+<meta property="article:published_time" content="2016-06-19T04:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-25T15:38:57.753Z">
+<meta property="article:author" content="Yan Chen">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.yanchen.ca/images/checkpointing-in-spark-streaming/checkpoint-1.png">
+
+
+<link rel="canonical" href="https://blog.yanchen.ca/2016/06/19/checkpointing-in-spark-streaming/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;en&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;blog.yanchen.ca&#x2F;2016&#x2F;06&#x2F;19&#x2F;checkpointing-in-spark-streaming&#x2F;&quot;,&quot;path&quot;:&quot;2016&#x2F;06&#x2F;19&#x2F;checkpointing-in-spark-streaming&#x2F;&quot;,&quot;title&quot;:&quot;Checkpointing in Spark Streaming&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Checkpointing in Spark Streaming | YAN CHEN</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WS9Z3VY9QG"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-WS9Z3VY9QG&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <h1 class="site-title">YAN CHEN</h1>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Why-checkpointing-is-needed"><span class="nav-number">1.</span> <span class="nav-text">Why checkpointing is needed?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Checkpointing-configuration"><span class="nav-number">2.</span> <span class="nav-text">Checkpointing configuration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Possible-issues-caused-by-checkpointing"><span class="nav-number">3.</span> <span class="nav-text">Possible issues caused by checkpointing</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Yan Chen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nrthyrk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nrthyrk" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.yanchen.ca/2016/06/19/checkpointing-in-spark-streaming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Yan Chen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YAN CHEN">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Checkpointing in Spark Streaming
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-06-19 00:00:00" itemprop="dateCreated datePublished" datetime="2016-06-19T00:00:00-04:00">2016-06-19</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2022-01-25 10:38:57" itemprop="dateModified" datetime="2022-01-25T10:38:57-05:00">2022-01-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>In spark streaming, if updateStateByKey or mapWithState is used, data has to be checkpointed. This post explains the details behind checkpointing in Spark.</p>
+<span id="more"></span>
+
+<p>Note that this post applies to Spark 1.6.1.</p>
+<h3 id="Why-checkpointing-is-needed"><a href="#Why-checkpointing-is-needed" class="headerlink" title="Why checkpointing is needed?"></a>Why checkpointing is needed?</h3><p>In spark streaming, each <code>DStream</code> has a list of dependencies, like in Spark Core. In each batch, the DAG of current batch will be executed. The dependencies of RDDs in a normal <code>DStream</code> are all from the current batch. However, dependencies of RDDs in <code>StateDStream</code>, which udateStateByKey or mapWithState uses, also come from previous batches, because it needs to recalculate the whole chain in case of failure (see figure below). If the dependency chain gets too long, a lot of memory will be used, even if some RDDs are in memory and does not need to be calculated every batch. This is when checkpointing comes into work. Checkpointing will break the dependency chain of RDDs in <code>StateDStream</code>, and point the head of the chain to checkpoints. This way, we do not need to maintain a super long dependency chain any more.</p>
+<p><img src="https://blog.yanchen.ca/images/checkpointing-in-spark-streaming/checkpoint-1.png" alt="Checkpoint RDD dependencies"></p>
+<p>The behavior of checkpointing can be verified in Spark code:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// streaming/src/main/scala/org/apache/spark/streaming/dstream/StateDStream.scala</span></span><br><span class="line"><span class="keyword">private</span> [<span class="keyword">this</span>] <span class="function"><span class="keyword">def</span> <span class="title">computeUsingPreviousRDD</span> </span>(</span><br><span class="line">  parentRDD: <span class="type">RDD</span>[(<span class="type">K</span>, <span class="type">V</span>)], prevStateRDD: <span class="type">RDD</span>[(<span class="type">K</span>, <span class="type">S</span>)]) = &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">val</span> cogroupedRDD = parentRDD.cogroup(prevStateRDD, partitioner)</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>parentRDD</code> is the dependency in the current batch, while <code>prevStateRDD</code> comes from the previous one.</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// core/src/main/scala/org/apache/spark/rdd/ReliableRDDCheckpointData.scala</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">doCheckpoint</span></span>(): <span class="type">CheckpointRDD</span>[<span class="type">T</span>] = &#123;</span><br><span class="line">  <span class="keyword">val</span> newRDD = <span class="type">ReliableCheckpointRDD</span>.writeRDDToCheckpointDirectory(rdd, cpDir)</span><br><span class="line">  ...</span><br><span class="line">  newRDD</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>This method is called to generate a new RDD which does not have dependencies on other RDDs. </p>
+<h3 id="Checkpointing-configuration"><a href="#Checkpointing-configuration" class="headerlink" title="Checkpointing configuration"></a>Checkpointing configuration</h3><p>Checkpointing is performed periodically. The checkpoint interval is determined by the parameter passed to <code>DStream::checkpoint</code> method:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// streaming/src/main/scala/org/apache/spark/streaming/dstream/DStream.scala</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">checkpoint</span></span>(interval: <span class="type">Duration</span>): <span class="type">DStream</span>[<span class="type">T</span>] = &#123;</span><br><span class="line">  ...</span><br><span class="line">  persist()</span><br><span class="line">  checkpointDuration = interval</span><br><span class="line">  <span class="keyword">this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Please note that checkpoint interval must be a multiplier of batch interval. </p>
+<p>If <code>DStream::checkpoint</code> is not called, <code>max(slideDuration, 10 seconds)</code> will be used as the <code>checkpointDuration</code>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// streaming/src/main/scala/org/apache/spark/streaming/dstream/DStream.scala</span></span><br><span class="line"><span class="keyword">private</span>[streaming] <span class="function"><span class="keyword">def</span> <span class="title">initialize</span></span>(time: <span class="type">Time</span>) &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">if</span> (mustCheckpoint &amp;&amp; checkpointDuration == <span class="literal">null</span>) &#123;</span><br><span class="line">    checkpointDuration = slideDuration * math.ceil(<span class="type">Seconds</span>(<span class="number">10</span>) / slideDuration).toInt</span><br><span class="line">    logInfo(<span class="string">s&quot;Checkpoint interval automatically set to <span class="subst">$checkpointDuration</span>&quot;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Possible-issues-caused-by-checkpointing"><a href="#Possible-issues-caused-by-checkpointing" class="headerlink" title="Possible issues caused by checkpointing"></a>Possible issues caused by checkpointing</h3><p>Checkpointing is good. But it can also cause problems if not used properly. </p>
+<ol>
+<li><p>One thing we noticed when we are running checkpointing is that, if we set the checkpoint interval to the same value of batch interval, the dependency chain is not broken (not sure whether checkpointing is actually performed in this case). This behavior happens in Spark 1.4.1; we did not test 1.6.1 for this. But it can cause serious memory issues in a long running application. </p>
+<p>So what we recommend to do is to check the dependency of RDDs with the following code if there is a similar issue:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">stateDstream.foreachRDD(rdd =&gt; &#123;</span><br><span class="line">  rdd.count</span><br><span class="line">  println(rdd.toDebugString.split(<span class="string">&quot;\n&quot;</span>).length)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>The reason why we have a <code>count</code> on <code>rdd</code> is that, we need an action for this RDD to be computed. Otherwise, there is no action on this RDD and it will not be checkpointed. </p>
+</li>
+<li><p>In case of failure or manual restarting, the checkpoint data will be read to reconstruct the whole graph and data in RDDs. However, if there are some DStreams which does not have actions on, RDDs in these DStreams will not be checkpointed and in turn, will cause <code>NullPointerException</code>.</p>
+</li>
+<li><p>Checkpointing is expensive. A lot of data need to be written to checkpoint directory when checkpointing happens. Data in RDDs are written within the current batch. However, checkpointing for the graph happens asynchronously in a fixed thread pool:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// streaming/src/main/scala/org/apache/spark/streaming/Checkpoint.scala</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CheckpointWriter</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="class">    ...</span></span></span><br><span class="line"><span class="params"><span class="class">  </span>) <span class="keyword">extends</span> <span class="title">Logging</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">val</span> executor = <span class="type">Executors</span>.newFixedThreadPool(<span class="number">1</span>)</span><br><span class="line">  ...</span><br><span class="line">  </span><br><span class="line">  <span class="class"><span class="keyword">class</span> <span class="title">CheckpointWriteHandler</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="class">      checkpointTime: <span class="type">Time</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">      bytes: <span class="type">Array</span>[<span class="type">Byte</span>],</span></span></span><br><span class="line"><span class="params"><span class="class">      clearCheckpointDataLater: <span class="type">Boolean</span></span>) <span class="keyword">extends</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span></span>() &#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">write</span></span>(checkpoint: <span class="type">Checkpoint</span>, clearCheckpointDataLater: <span class="type">Boolean</span>) &#123;</span><br><span class="line">    ...</span><br><span class="line">    executor.execute(<span class="keyword">new</span> <span class="type">CheckpointWriteHandler</span>(</span><br><span class="line">      checkpoint.checkpointTime, bytes, clearCheckpointDataLater))</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>This mechanism can introduce problems if the average writing time is longer than the checkpoint interval. A lot of <code>CheckpointWriteHandler</code> will be queued up in the fixed thread pool, and memory usage of spark streaming will keep growing up until out of memory happens. </p>
+<p>The checkpoint interval for graph is hardcoded to be batch interval as far as I understand. </p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// streaming/src/main/scala/org/apache/spark/streaming/scheduler/JobGenerator.scala</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">doCheckpoint</span></span>(time: <span class="type">Time</span>, clearCheckpointDataLater: <span class="type">Boolean</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (shouldCheckpoint &amp;&amp; (time - graph.zeroTime).isMultipleOf(ssc.checkpointDuration)) &#123;</span><br><span class="line">    ...</span><br><span class="line">    checkpointWriter.write(<span class="keyword">new</span> <span class="type">Checkpoint</span>(ssc, time), clearCheckpointDataLater)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The value of <code>ssc.checkpointDuration</code> comes from:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// streaming/src/main/scala/org/apache/spark/streaming/StreamingContext.scala</span></span><br><span class="line"><span class="keyword">private</span>[streaming] <span class="keyword">val</span> checkpointDuration: <span class="type">Duration</span> = &#123;</span><br><span class="line">  <span class="keyword">if</span> (isCheckpointPresent) _cp.checkpointDuration <span class="keyword">else</span> graph.batchDuration</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>_cp</code> is <code>null</code> if the <code>StreamingContext</code> is not recreated from a checkpoint. This means that, initially, <code>checkpointDuration</code> is the same value as <code>graph.batchDuration</code>.</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/05/23/bcm4360-linux-driver/" rel="prev" title="BCM4360 Linux Driver">
+                  <i class="fa fa-chevron-left"></i> BCM4360 Linux Driver
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/06/28/fileinputdstream-in-spark-streaming/" rel="next" title="FileInputDStream in Spark Streaming">
+                  FileInputDStream in Spark Streaming <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yan Chen</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

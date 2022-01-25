@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,700,700italic%7CMontserrat:300,300italic,400,400italic,700,700italic%7CSource+Code+Pro:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;blog.yanchen.ca&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Mist&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:&quot;utterances&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;Searching...&quot;,&quot;empty&quot;:&quot;We didn&#39;t find any results for the search: ${query}&quot;,&quot;hits_time&quot;:&quot;${hits} results found in ${time} ms&quot;,&quot;hits&quot;:&quot;${hits} results found&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="This tutorial shows how to setup a L2TP&#x2F;IPSec server on Arch Linux.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="L2TP over IPSec VPN Server on Arch Linux with openswan, xl2tpd and ppp">
+<meta property="og:url" content="https://blog.yanchen.ca/2014/06/13/l2tp-over-ipsec-vpn-server-on-arch-linux-with-openswan-xl2tpd-and-ppp/">
+<meta property="og:site_name" content="YAN CHEN">
+<meta property="og:description" content="This tutorial shows how to setup a L2TP&#x2F;IPSec server on Arch Linux.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2014-06-13T04:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-25T15:38:57.757Z">
+<meta property="article:author" content="Yan Chen">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.yanchen.ca/2014/06/13/l2tp-over-ipsec-vpn-server-on-arch-linux-with-openswan-xl2tpd-and-ppp/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;en&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;blog.yanchen.ca&#x2F;2014&#x2F;06&#x2F;13&#x2F;l2tp-over-ipsec-vpn-server-on-arch-linux-with-openswan-xl2tpd-and-ppp&#x2F;&quot;,&quot;path&quot;:&quot;2014&#x2F;06&#x2F;13&#x2F;l2tp-over-ipsec-vpn-server-on-arch-linux-with-openswan-xl2tpd-and-ppp&#x2F;&quot;,&quot;title&quot;:&quot;L2TP over IPSec VPN Server on Arch Linux with openswan, xl2tpd and ppp&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>L2TP over IPSec VPN Server on Arch Linux with openswan, xl2tpd and ppp | YAN CHEN</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WS9Z3VY9QG"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-WS9Z3VY9QG&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <h1 class="site-title">YAN CHEN</h1>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Yan Chen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nrthyrk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nrthyrk" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.yanchen.ca/2014/06/13/l2tp-over-ipsec-vpn-server-on-arch-linux-with-openswan-xl2tpd-and-ppp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Yan Chen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YAN CHEN">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          L2TP over IPSec VPN Server on Arch Linux with openswan, xl2tpd and ppp
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2014-06-13 00:00:00" itemprop="dateCreated datePublished" datetime="2014-06-13T00:00:00-04:00">2014-06-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2022-01-25 10:38:57" itemprop="dateModified" datetime="2022-01-25T10:38:57-05:00">2022-01-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>This tutorial shows how to setup a L2TP/IPSec server on Arch Linux.</p>
+<span id="more"></span>
+
+<p>This post is based on <a target="_blank" rel="noopener" href="https://raymii.org/s/tutorials/IPSEC_L2TP_vpn_on_a_Raspberry_Pi_with_Arch_Linux.html">this tutorial</a>. It runs on Arch Linux x86_64, and here are the versions used:</p>
+<ul>
+<li><code>uname -a</code>: Linux 3.14.6-1-ARCH #1 SMP PREEMPT Sun Jun 8 10:08:38 CEST 2014 x86_64 GNU/Linux</li>
+<li><code>ipsec --version</code>: Linux Openswan U2.6.41/K3.14.6-1-ARCH (netkey)</li>
+<li><code>xl2tpd -v</code>: xl2tpd version: xl2tpd-1.3.6</li>
+<li><code>pppd --version</code>: pppd version 2.4.6</li>
+</ul>
+<p>IPSec encrypts your IP packets to provide encryption and authentication, so no one can decrypt or forge data between your clients and your server. L2TP provides a tunnel to send data. It does not provide encryption and authentication though, that is why we combine the two. You should do all of the steps as the root user.</p>
+<p><strong>Install yaourt</strong></p>
+<p><code>openswan</code> is not in the default repository. It could be installed through AUR however. If you have already done this before, skip this step. Add the following line to <code>/etc/pacman.conf</code>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[archlinuxfr]</span><br><span class="line">SigLevel = Never</span><br><span class="line">Server = http://repo.archlinux.fr/$arch</span><br></pre></td></tr></table></figure>
+
+<p>Open up the terminal. Enter the command given below to update the repository database and install Yaourt on your system.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pacman -Sy yaourt</span><br></pre></td></tr></table></figure>
+
+<p><strong>Install ppp openswan and xl2tpd</strong></p>
+<p>First, install the required packages:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yaourt -Sy openswan xl2tpd ppp lsof python2</span><br></pre></td></tr></table></figure>
+
+<p><strong>Firewall and sysctl</strong></p>
+<p>We are going to set the firewall and make sure the kernel forwards IP packets.</p>
+<p>Execute the below commands to enable kernel IP packet forwarding and disable ICP redirects.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;net.ipv4.ip_forward = 1&quot; |  tee -a /etc/sysctl.conf</span><br><span class="line">echo &quot;net.ipv4.conf.all.accept_redirects = 0&quot; |  tee -a /etc/sysctl.conf</span><br><span class="line">echo &quot;net.ipv4.conf.all.send_redirects = 0&quot; |  tee -a /etc/sysctl.conf</span><br><span class="line">echo &quot;net.ipv4.conf.default.rp_filter = 0&quot; |  tee -a /etc/sysctl.conf</span><br><span class="line">echo &quot;net.ipv4.conf.default.accept_source_route = 0&quot; |  tee -a /etc/sysctl.conf</span><br><span class="line">echo &quot;net.ipv4.conf.default.send_redirects = 0&quot; |  tee -a /etc/sysctl.conf</span><br><span class="line">echo &quot;net.ipv4.icmp_ignore_bogus_error_responses = 1&quot; |  tee -a /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+
+<p>To have the following settings applied at boot we are creating a custom systemd service which starts at boot. Add the following code to <code>/usr/local/bin/vpn-boot.sh</code>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env bash</span><br><span class="line">for vpn in /proc/sys/net/ipv4/conf/*; do</span><br><span class="line">echo 0 &gt; $vpn/accept_redirects;</span><br><span class="line">echo 0 &gt; $vpn/send_redirects;</span><br><span class="line">done</span><br><span class="line">iptables --table nat --append POSTROUTING --jump MASQUERADE</span><br><span class="line"></span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<p>Make it executable:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 755 /usr/local/bin/vpn-boot.sh</span><br></pre></td></tr></table></figure>
+
+<p>Using the following systemd service we can start the script which sets the above things at boot: Add the following code to <code>/etc/systemd/system/vpnboot.service</code>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=VPN Settings at boot</span><br><span class="line">After=netctl@eth0.service</span><br><span class="line">Before=openswan.service xl2tpd.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=/usr/local/bin/vpn-boot.sh</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>Then enable and start it:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable vpnboot.service</span><br><span class="line">systemctl start vpnboot.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>Configure Openswan (IPSec)</strong></p>
+<p>Use your favorite editor to edit <code>/etc/ipsec.conf</code>, replace the contents with the following:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">version 2</span><br><span class="line">config setup</span><br><span class="line">    dumpdir=/var/run/pluto/</span><br><span class="line">    #in what directory should things started by setup (notably the Pluto daemon) be allowed to dump core?</span><br><span class="line"></span><br><span class="line">    nat_traversal=yes</span><br><span class="line">    #whether to accept/offer to support NAT (NAPT, also known as &quot;IP Masqurade&quot;) workaround for IPsec</span><br><span class="line"></span><br><span class="line">    virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v6:fd00::/8,%v6:fe80::/10</span><br><span class="line">    #contains the networks that are allowed as subnet= for the remote client. In other words, the address ranges that may live behind a NAT router through which a client connects.</span><br><span class="line"></span><br><span class="line">    protostack=netkey</span><br><span class="line">    #decide which protocol stack is going to be used.</span><br><span class="line"></span><br><span class="line">    plutoopts=&quot;--interface=eth0&quot;</span><br><span class="line">    # replace with your ethernet interface.</span><br><span class="line"></span><br><span class="line">    force_keepalive=yes</span><br><span class="line">    keep_alive=60</span><br><span class="line">    # Send a keep-alive packet every 60 seconds.</span><br><span class="line"></span><br><span class="line">conn L2TP-PSK-noNAT</span><br><span class="line">    authby=secret</span><br><span class="line">    #shared secret. Use rsasig for certificates.</span><br><span class="line"></span><br><span class="line">    pfs=no</span><br><span class="line">    #Disable pfs</span><br><span class="line"></span><br><span class="line">    auto=add</span><br><span class="line">    #the ipsec tunnel should be started and routes created when the ipsec daemon itself starts.</span><br><span class="line"></span><br><span class="line">    keyingtries=3</span><br><span class="line">    #Only negotiate a conn. 3 times.</span><br><span class="line"></span><br><span class="line">    ikelifetime=8h</span><br><span class="line">    keylife=1h</span><br><span class="line"></span><br><span class="line">    type=transport</span><br><span class="line">    #because we use l2tp as tunnel protocol</span><br><span class="line"></span><br><span class="line">    left=%SERVERIP%</span><br><span class="line">    #fill in server IP above</span><br><span class="line"></span><br><span class="line">    leftprotoport=17/1701</span><br><span class="line">    right=%any</span><br><span class="line">    rightprotoport=17/%any</span><br><span class="line"></span><br><span class="line">    dpddelay=10</span><br><span class="line">    # Dead Peer Dectection (RFC 3706) keepalives delay</span><br><span class="line">    dpdtimeout=20</span><br><span class="line">    #  length of time (in seconds) we will idle without hearing either an R_U_THERE poll from our peer, or an R_U_THERE_ACK reply.</span><br><span class="line">    dpdaction=clear</span><br><span class="line">    # When a DPD enabled peer is declared dead, what action should be taken. clear means the eroute and SA with both be cleared.</span><br></pre></td></tr></table></figure>
+
+<p>Replace %SERVERIP% with the external IP, and interface=eth0 with your own ethernet interface.</p>
+<p><strong>The Shared Secret</strong></p>
+<p>The shared secret is defined in the /etc/ipsec.secrets file. Make sure it is long and random:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%SERVERIP%  %any:   PSK &quot;Your secret random key&quot;</span><br></pre></td></tr></table></figure>
+
+<p>Again, replace <code>%SERVERIP%</code> with the external IP.</p>
+<p><strong>Verify IPSec Settings</strong></p>
+<p>Enable and start Openswan:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable openswan</span><br><span class="line">systemctl start openswan</span><br></pre></td></tr></table></figure>
+
+<p>Now to make sure IPSEC works, execute the following command:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipsec verify</span><br></pre></td></tr></table></figure>
+
+<p>My output look like this:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Checking if IPsec got installed and started correctly:</span><br><span class="line"></span><br><span class="line">Version check and ipsec on-path                   	[OK]</span><br><span class="line">Openswan U2.6.41/K3.14.6-1-ARCH (netkey)</span><br><span class="line">See &#x27;ipsec --copyright&#x27; for copyright information.</span><br><span class="line">Checking for IPsec support in kernel              	[OK]</span><br><span class="line"> NETKEY: Testing XFRM related proc values</span><br><span class="line">         ICMP default/send_redirects              	[OK]</span><br><span class="line">         ICMP default/accept_redirects            	[OK]</span><br><span class="line">         XFRM larval drop                         	[OK]</span><br><span class="line">Hardware random device check                      	[N/A]</span><br><span class="line">Checking rp_filter                                	[ENABLED]</span><br><span class="line"> /proc/sys/net/ipv4/conf/eno1/rp_filter           	[ENABLED]</span><br><span class="line">Checking that pluto is running                    	[OK]</span><br><span class="line"> Pluto listening for IKE on udp 500               	[OK]</span><br><span class="line"> Pluto listening for IKE on tcp 500               	[NOT IMPLEMENTED]</span><br><span class="line"> Pluto listening for IKE/NAT-T on udp 4500        	[OK]</span><br><span class="line"> Pluto listening for IKE/NAT-T on tcp 4500        	[NOT IMPLEMENTED]</span><br><span class="line"> Pluto listening for IKE on tcp 10000 (cisco)     	[NOT IMPLEMENTED]</span><br><span class="line">Checking NAT and MASQUERADEing                    	[TEST INCOMPLETE]</span><br><span class="line">Checking &#x27;ip&#x27; command                             	[OK]</span><br><span class="line">Checking &#x27;iptables&#x27; command                       	[OK]</span><br><span class="line"></span><br><span class="line">ipsec verify: encountered errors</span><br></pre></td></tr></table></figure>
+
+<p><code>netstat -tulpan</code> shows that pluto is listening on the ports:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Active Internet connections (servers and established)</span><br><span class="line">Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name</span><br><span class="line">[...]</span><br><span class="line">udp        0      0 111.111.111.111:4500    0.0.0.0:*                           690/pluto</span><br><span class="line">udp        0      0 111.111.111.111:500     0.0.0.0:*                           690/pluto</span><br><span class="line">udp        0      0 0.0.0.0:1701            0.0.0.0:*                           328/xl2tpd</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
+
+<p><strong>Configure xl2tpd</strong></p>
+<p>Use your favorite editor to edit <code>/etc/xl2tpd/xl2tpd.conf</code>, replace the contents with the following:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[global]</span><br><span class="line">ipsec saref = yes</span><br><span class="line">saref refinfo = 30</span><br><span class="line"></span><br><span class="line">[lns default]</span><br><span class="line">ip range = 172.16.1.30-172.16.1.100</span><br><span class="line">local ip = 172.16.1.1</span><br><span class="line">unix authentication = yes</span><br><span class="line">require authentication = yes</span><br><span class="line">ppp debug = yes</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2013/10/28/move-mysql-data-storage-in-mac-os-x/" rel="prev" title="Move MySQL Data Storage in Mac OS X">
+                  <i class="fa fa-chevron-left"></i> Move MySQL Data Storage in Mac OS X
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/05/23/bcm4360-linux-driver/" rel="next" title="BCM4360 Linux Driver">
+                  BCM4360 Linux Driver <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yan Chen</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

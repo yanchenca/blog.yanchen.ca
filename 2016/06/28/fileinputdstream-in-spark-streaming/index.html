@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,700,700italic%7CMontserrat:300,300italic,400,400italic,700,700italic%7CSource+Code+Pro:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;blog.yanchen.ca&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Mist&quot;,&quot;version&quot;:&quot;8.5.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:&quot;utterances&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:false,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;Searching...&quot;,&quot;empty&quot;:&quot;We didn&#39;t find any results for the search: ${query}&quot;,&quot;hits_time&quot;:&quot;${hits} results found in ${time} ms&quot;,&quot;hits&quot;:&quot;${hits} results found&quot;}}</script><script src="/js/config.js"></script>
+<meta name="description" content="In spark streaming, FileInputDStream is commonly used to generate DStream from files on Hadoop-compatible filesystems, including HDFS, S3, NFS, etc. This post will discuss the details of this API and">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FileInputDStream in Spark Streaming">
+<meta property="og:url" content="https://blog.yanchen.ca/2016/06/28/fileinputdstream-in-spark-streaming/">
+<meta property="og:site_name" content="YAN CHEN">
+<meta property="og:description" content="In spark streaming, FileInputDStream is commonly used to generate DStream from files on Hadoop-compatible filesystems, including HDFS, S3, NFS, etc. This post will discuss the details of this API and">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-06-28T04:00:00.000Z">
+<meta property="article:modified_time" content="2022-01-25T15:38:57.753Z">
+<meta property="article:author" content="Yan Chen">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.yanchen.ca/2016/06/28/fileinputdstream-in-spark-streaming/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;en&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;blog.yanchen.ca&#x2F;2016&#x2F;06&#x2F;28&#x2F;fileinputdstream-in-spark-streaming&#x2F;&quot;,&quot;path&quot;:&quot;2016&#x2F;06&#x2F;28&#x2F;fileinputdstream-in-spark-streaming&#x2F;&quot;,&quot;title&quot;:&quot;FileInputDStream in Spark Streaming&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>FileInputDStream in Spark Streaming | YAN CHEN</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WS9Z3VY9QG"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{&quot;tracking_id&quot;:&quot;G-WS9Z3VY9QG&quot;,&quot;only_pageview&quot;:false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <h1 class="site-title">YAN CHEN</h1>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-to-use-FileInputDStream"><span class="nav-number">1.</span> <span class="nav-text">How to use FileInputDStream?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-does-FileInputDStream-work"><span class="nav-number">2.</span> <span class="nav-text">How does FileInputDStream work?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Possible-issues-caused-by-FileInputDStream"><span class="nav-number">3.</span> <span class="nav-text">Possible issues caused by FileInputDStream</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Yan Chen</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/nrthyrk" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;nrthyrk" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.yanchen.ca/2016/06/28/fileinputdstream-in-spark-streaming/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Yan Chen">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YAN CHEN">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          FileInputDStream in Spark Streaming
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2016-06-28 00:00:00" itemprop="dateCreated datePublished" datetime="2016-06-28T00:00:00-04:00">2016-06-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2022-01-25 10:38:57" itemprop="dateModified" datetime="2022-01-25T10:38:57-05:00">2022-01-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>In spark streaming, <code>FileInputDStream</code> is commonly used to generate <code>DStream</code> from files on Hadoop-compatible filesystems, including HDFS, S3, NFS, etc. This post will discuss the details of this API and possible issues in using it.</p>
+<span id="more"></span>
+
+<p>Note that this post applies to Spark 1.6.1.</p>
+<h3 id="How-to-use-FileInputDStream"><a href="#How-to-use-FileInputDStream" class="headerlink" title="How to use FileInputDStream?"></a>How to use <code>FileInputDStream</code>?</h3><p><code>streamingContext.fileStream[KeyClass, ValueClass, InputFormatClass](dataDirectory, filter, newFilesOnly)</code> or its other overloaded methods can be used to construct a new <code>FileInputDStream</code>.</p>
+<p>If we look at the constructor of <code>FileInputDStream</code>:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /streaming/src/main/scala/org/apache/spark/streaming/dstream/FileInputDStream.scala</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileInputDStream</span>[<span class="type">K</span>, <span class="type">V</span>, <span class="type">F</span> &lt;: <span class="type">NewInputFormat</span>[<span class="type">K</span>, <span class="type">V</span>]](<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="class">  _ssc: <span class="type">StreamingContext</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">  directory: <span class="type">String</span>,</span></span></span><br><span class="line"><span class="params"><span class="class">  filter: <span class="type">Path</span> =&gt; <span class="type">Boolean</span> = <span class="type">FileInputDStream</span>.defaultFilter,</span></span></span><br><span class="line"><span class="params"><span class="class">  newFilesOnly: <span class="type">Boolean</span> = true,</span></span></span><br><span class="line"><span class="params"><span class="class">  conf: <span class="type">Option</span>[<span class="type">Configuration</span>] = <span class="type">None</span></span>)</span></span><br><span class="line">  (<span class="keyword">implicit</span> km: <span class="type">ClassTag</span>[<span class="type">K</span>], vm: <span class="type">ClassTag</span>[<span class="type">V</span>], fm: <span class="type">ClassTag</span>[<span class="type">F</span>])</span><br><span class="line"><span class="keyword">extends</span> <span class="type">InputDStream</span>[(<span class="type">K</span>, <span class="type">V</span>)](_ssc)</span><br></pre></td></tr></table></figure>
+
+<p><code>directory</code> is the directory this <code>FileInputDStream</code> will be monitoring. <code>filter</code> is a filter for the file names, <code>newFilesOnly</code> determines whether we should process the old files already in the directory when the application starts.</p>
+<h3 id="How-does-FileInputDStream-work"><a href="#How-does-FileInputDStream-work" class="headerlink" title="How does FileInputDStream work?"></a>How does <code>FileInputDStream</code> work?</h3><p><code>FileInputDStream</code> monitors the directory passed in to method: <code>streamingContext.fileStream[KeyClass, ValueClass, InputFormatClass](dataDirectory)</code>, and reads files to its RDDs every batch.</p>
+<p>It has mechanism to read new files only and ignore files already read in previous batches. It determines whether a file is new according to its modification time. The following code verifies it:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /streaming/src/main/scala/org/apache/spark/streaming/dstream/FileInputDStream.scala</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">findNewFiles</span></span>(currentTime: <span class="type">Long</span>): <span class="type">Array</span>[<span class="type">String</span>] = &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// Calculate ignore threshold</span></span><br><span class="line">    <span class="keyword">val</span> modTimeIgnoreThreshold = math.max(</span><br><span class="line">      initialModTimeIgnoreThreshold,   <span class="comment">// initial threshold based on newFilesOnly setting</span></span><br><span class="line">      currentTime - durationToRemember.milliseconds  <span class="comment">// trailing end of the remember window</span></span><br><span class="line">    )</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">val</span> filter = <span class="keyword">new</span> <span class="type">PathFilter</span> &#123;</span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">accept</span></span>(path: <span class="type">Path</span>): <span class="type">Boolean</span> = isNewFile(path, currentTime, modTimeIgnoreThreshold)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> newFiles = fs.listStatus(directoryPath, filter).map(_.getPath.toString)</span><br><span class="line">    ...</span><br><span class="line">    newFiles</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In <code>isNewFile</code> method, it checks whether the file’s modification time is between <code>modTimeIgnoreThreshold</code> and <code>currentTime</code> and whether this file is read before:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /streaming/src/main/scala/org/apache/spark/streaming/dstream/FileInputDStream.scala</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">def</span> <span class="title">isNewFile</span></span>(path: <span class="type">Path</span>, currentTime: <span class="type">Long</span>, modTimeIgnoreThreshold: <span class="type">Long</span>): <span class="type">Boolean</span> = &#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">// Reject file if it was created before the ignore time</span></span><br><span class="line">  <span class="keyword">val</span> modTime = getFileModTime(path)</span><br><span class="line">  <span class="keyword">if</span> (modTime &lt;= modTimeIgnoreThreshold) &#123;</span><br><span class="line">    <span class="comment">// Use &lt;= instead of &lt; to avoid SPARK-4518</span></span><br><span class="line">    logDebug(<span class="string">s&quot;<span class="subst">$pathStr</span> ignored as mod time <span class="subst">$modTime</span> &lt;= ignore time <span class="subst">$modTimeIgnoreThreshold</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Reject file if mod time &gt; current batch time</span></span><br><span class="line">  <span class="keyword">if</span> (modTime &gt; currentTime) &#123;</span><br><span class="line">    logDebug(<span class="string">s&quot;<span class="subst">$pathStr</span> not selected as mod time <span class="subst">$modTime</span> &gt; current time <span class="subst">$currentTime</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Reject file if it was considered earlier</span></span><br><span class="line">  <span class="keyword">if</span> (recentlySelectedFiles.contains(pathStr)) &#123;</span><br><span class="line">    logDebug(<span class="string">s&quot;<span class="subst">$pathStr</span> already considered&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">  logDebug(<span class="string">s&quot;<span class="subst">$pathStr</span> accepted with mod time <span class="subst">$modTime</span>&quot;</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>recentlySelectedFiles</code> stores names of files which are selected in recent previous batches. But how long is recent? This is determined by the configuration <code>spark.streaming.fileStream.minRememberDuration</code> or <code>spark.streaming.minRememberDuration</code> (deprecated) in Spark Streaming. The default value of it is 60 seconds:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /streaming/src/main/scala/org/apache/spark/streaming/dstream/FileInputDStream.scala</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> minRememberDurationS = &#123;</span><br><span class="line">  <span class="type">Seconds</span>(ssc.conf.getTimeAsSeconds(<span class="string">&quot;spark.streaming.fileStream.minRememberDuration&quot;</span>,</span><br><span class="line">    ssc.conf.get(<span class="string">&quot;spark.streaming.minRememberDuration&quot;</span>, <span class="string">&quot;60s&quot;</span>)))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>There is a figure in the very intuitive comment of this class which can explain this very clearly:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// /streaming/src/main/scala/org/apache/spark/streaming/dstream/FileInputDStream.scala</span><br><span class="line"></span><br><span class="line">                     |&lt;----- remember window -----&gt;|</span><br><span class="line">ignore threshold ---&gt;|                             |&lt;--- current batch time</span><br><span class="line">                     |____.____.____.____.____.____|</span><br><span class="line">                     |    |    |    |    |    |    |</span><br><span class="line">---------------------|----|----|----|----|----|----|-----------------------&gt; Time</span><br><span class="line">                     |____|____|____|____|____|____|</span><br><span class="line">                            remembered batches</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>The code also indicates that if restarting from checkpoint happens, the batches will be replayed and only files during the replaying batch will be read in that batch.</p>
+<h3 id="Possible-issues-caused-by-FileInputDStream"><a href="#Possible-issues-caused-by-FileInputDStream" class="headerlink" title="Possible issues caused by FileInputDStream"></a>Possible issues caused by <code>FileInputDStream</code></h3><ol>
+<li><p>If a file is uploaded to HDFS, the file could be in a state is partially uploaded, which should not be read into <code>FileInputDStream</code>. Our solution is</p>
+<ul>
+<li>uploading to another folder, move it to the input folder after uploading complete, or</li>
+<li>uploading to a special file name, e.g. starting with a dot, and rename it to non-special one. In the meanwhile, filter special file names in <code>streamingContext.fileStream[KeyClass, ValueClass, InputFormatClass](dataDirectory, filter, newFilesOnly)</code>.</li>
+</ul>
+</li>
+<li><p>If a file is overwritten, the file may or may not be read, depending on whether this file is overwritten after the remember window. Ideally, all the files should be different and no two files have the same name. Our solution is to append the upload time to the file names in our ingestion tool.</p>
+</li>
+<li><p>The file names are not read into the data in <code>FileInputDStream</code>. If we need file names, we need to use a custom input format and a custom record reader (note that the following code is in Java):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomInputFormat</span> <span class="keyword">extends</span> <span class="title">FileInputFormat</span>&lt;<span class="title">Text</span>, <span class="title">Text</span>&gt;</span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> RecordReader&lt;Text, Text&gt; <span class="title">createRecordReader</span><span class="params">(InputSplit genericSplit, TaskAttemptContext context)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    context.setStatus(genericSplit.toString());</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> CustomRecordReader(context.getConfiguration());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>and</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomRecordReader</span> <span class="keyword">extends</span> <span class="title">RecordReader</span>&lt;<span class="title">Text</span>, <span class="title">Text</span>&gt;</span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> LineRecordReader lineRecordReader;</span><br><span class="line">  <span class="keyword">private</span> Text innerValue;</span><br><span class="line">  <span class="keyword">private</span> Text key;</span><br><span class="line">  <span class="keyword">private</span> Text value;</span><br><span class="line">  <span class="keyword">private</span> String filename = <span class="string">&quot;&quot;</span>;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> Class <span class="title">getKeyClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Text.class;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">CustomRecordReader</span><span class="params">(Configuration conf)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    lineRecordReader = <span class="keyword">new</span> LineRecordReader();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(InputSplit genericSplit, TaskAttemptContext context)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    FileSplit split = (FileSplit) genericSplit;</span><br><span class="line">    Path file = split.getPath();</span><br><span class="line">    <span class="keyword">this</span>.filename = file.getName();</span><br><span class="line">    lineRecordReader.initialize(genericSplit, context);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">nextKeyValue</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">byte</span>[] line = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (lineRecordReader.nextKeyValue())&#123;</span><br><span class="line">      innerValue = lineRecordReader.getCurrentValue();</span><br><span class="line">      line = innerValue.getBytes();</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (line == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)&#123;</span><br><span class="line">      key = <span class="keyword">new</span> Text();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (value == <span class="keyword">null</span>)&#123;</span><br><span class="line">      value = <span class="keyword">new</span> Text();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.key.set(<span class="keyword">this</span>.filename);</span><br><span class="line">    <span class="keyword">this</span>.value = innerValue;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> Text <span class="title">getCurrentKey</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> key;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> Text <span class="title">getCurrentValue</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">getProgress</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> lineRecordReader.getProgress();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    lineRecordReader.close();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The custom input format can be used in <code>jssc.fileStream(inputFolder, Text.class, Text.class, CustomInputFormat.class)</code>.</p>
+</li>
+<li><p>Once when we use this API, some of the files are not read. One possible cause for this behavior is that the <code>spark.streaming.fileStream.minRememberDuration</code> is too short compared to batch interval. We observe that after a file is uploaded, it sometimes is not processed in the current batch. The possible reason is that HDFS client has a cache layer which has a delay on discovering new files. So if <code>spark.streaming.fileStream.minRememberDuration</code> is too short, the newly uploaded files could be ignored before it shows up and gets read into <code>FileInputDStream</code>. We recommend that <code>spark.streaming.fileStream.minRememberDuration</code> should be set to at least twice as the batch interval to prevent such behaviors.</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/06/19/checkpointing-in-spark-streaming/" rel="prev" title="Checkpointing in Spark Streaming">
+                  <i class="fa fa-chevron-left"></i> Checkpointing in Spark Streaming
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/06/29/hdfs-token-expiry-in-spark-streaming/" rel="next" title="HDFS Token Expiry in Spark Streaming">
+                  HDFS Token Expiry in Spark Streaming <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Yan Chen</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
